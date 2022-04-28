@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const app = express();
-const { PORT = 3000 } = process.env;
+
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
@@ -21,6 +21,8 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
+
+const { PORT = 3000 } = process.env;
 
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый путь не найден' });
