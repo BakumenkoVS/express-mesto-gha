@@ -1,41 +1,49 @@
-const User = require('../models/user');
+const Card = require('../models/card');
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
+const getCards = (req, res) => {
+  Card.find({})
+    .then((cards) => res.send(cards))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-const getUser = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+const createCard = (req, res) => {
+  const { name, link } = req.body;
+  const owner = req.user._id;
+  Card.create({ name, link, owner })
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Такой карточки не существует' });
       }
-      return res.send(user);
+      return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Некорректные данные' });
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Не удалось создать карточку' });
       }
       return res.status(500).send({ message: err.message });
     });
 };
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
+const deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Такой карточки не существует' });
+      }
+      return res.send(card);
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Некорректные данные' });
+      if (err.name === 'CastError') {
+        return res.status(400).send({
+          message: 'Некорректный id карточки',
+        });
       }
       return res.status(500).send({ message: err.message });
     });
 };
 
 module.exports = {
-  getUsers,
-  getUser,
-  createUser,
+  getCards,
+  createCard,
+  deleteCard,
 };
