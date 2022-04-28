@@ -22,6 +22,10 @@ app.use((req, res, next) => {
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
 
+app.all('*', (req, res) => {
+  res.status(404).send({ message: 'Запрашиваемый путь не найден' });
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
