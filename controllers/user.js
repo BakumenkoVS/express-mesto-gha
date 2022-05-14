@@ -56,12 +56,13 @@ const createUser = (req, res) => {
     )
     .catch((err) => {
       if (err.code === 11000) {
+        console.log(err);
         next(new ConflictError('Такой пользователь уже существует'));
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
