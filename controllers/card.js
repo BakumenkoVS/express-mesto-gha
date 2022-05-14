@@ -1,9 +1,12 @@
 const Card = require('../models/card');
+const ForbiddenError = require('../errors/forbiddenError');
+const NotFoundError = require('../errors/notFoundError');
+const ValidationError = require('../errors/validationError');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
 const createCard = (req, res) => {
@@ -12,15 +15,15 @@ const createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' });
+        next(new NotFoundError('Такой карточки не существует'));
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Не удалось создать карточку' });
+        next(new ValidationError('Переданы некорректные данные'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -28,17 +31,18 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' });
+        next(new NotFoundError('Такой карточки не существует'));
       }
-      return res.send(card);
+      if (!(card.owner.toString() === req.user._id)) {
+        throw new ForbiddenError('У вас нет прав для удаления этой карточки');
+      }
+      return Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Карточка удалена' }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Некорректный id карточки',
-        });
+        next(new ValidationError('Введен некорректный id карточки'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -46,15 +50,15 @@ const likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' });
+        next(new NotFoundError('Такой карточки не существует'));
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Некорректные данные' });
+        next(new ValidationError('Введен некорректный id карточки'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -62,15 +66,15 @@ const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' });
+        next(new NotFoundError('Такой карточки не существует'));
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Некорректные данные' });
+        next(new ValidationError('Введен некорректный id карточки'));
       }
-      return res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
