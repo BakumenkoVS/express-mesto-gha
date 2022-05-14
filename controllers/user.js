@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorizedError');
 const ValidationError = require('../errors/validationError');
 const NotFoundError = require('../errors/notFoundError');
-const ConflictError = require('../errors/conflictError');
+const ConflictError = require('../errors/ConflictError');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -56,10 +56,9 @@ const createUser = (req, res) => {
     )
     .catch((err) => {
       if (err.code === 11000) {
-        console.log(err);
-        next(new ConflictError('Такой пользователь уже существует'));
-      } else if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
+        next(new ConflictError('Пользователь с таким EMAIL уже зарегистрирован'));
+      } else if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные id пользователя'));
       } else {
         next(err);
       }
