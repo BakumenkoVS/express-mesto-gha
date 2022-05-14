@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorizedError');
 const ValidationError = require('../errors/validationError');
 const NotFoundError = require('../errors/notFoundError');
-const ConflictError = require('../errors/ConflictError');
+const ConflictError = require('../errors/conflictError');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -109,19 +109,9 @@ const login = (req, res, next) => {
 };
 
 const getMe = (req, res, next) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь с таким id не найден');
-      }
-      res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('Введен некорректный id'));
-      }
-      next(err);
-    });
+  User.findById(req.user._id)
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 module.exports = {

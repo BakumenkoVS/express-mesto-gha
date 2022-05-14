@@ -65,10 +65,10 @@ const likeCard = (req, res, next) => {
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Такой карточки не существует'));
+      if (card == null) {
+        throw new NotFoundError('Карточка с таким id не найдена');
       }
-      return res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
