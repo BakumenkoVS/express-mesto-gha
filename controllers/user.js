@@ -56,7 +56,7 @@ const createUser = (req, res) => {
     )
     .catch((err) => {
       if (err.code === 11000) {
-        res.send('gjkmpjdfntkm c nfrb');
+        res.status(409).send('gjkmpjdfntkm c nfrb');
       } else if (err.name === 'CastError') {
         next(new ValidationError('Переданы некорректные данные id пользователя'));
       } else {
