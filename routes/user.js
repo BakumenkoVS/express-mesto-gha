@@ -4,6 +4,7 @@ const { celebrate, Joi } = require('celebrate');
 const { getUsers, getUser, updateProfile, updateAvatar, getMe } = require('../controllers/user');
 
 router.get('/', getUsers);
+router.get('/me', getMe);
 router.get(
   '/:userId',
   celebrate({
@@ -13,8 +14,6 @@ router.get(
   }),
   getUser
 );
-
-router.get('/me', getMe);
 
 router.patch(
   '/me',
