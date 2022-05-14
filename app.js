@@ -7,7 +7,7 @@ const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const bodyParser = require('body-parser');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb', {
