@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 
 const app = express();
+const { bodyParser } = require('body-parser');
+
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
-const bodyParser = require('body-parser');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 require('dotenv').config();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -33,6 +35,7 @@ app.post(
       password: Joi.string().required(),
     }),
   }),
+  // eslint-disable-next-line comma-dangle
   login
 );
 
@@ -47,6 +50,7 @@ app.post(
       avatar: Joi.string().pattern(/^((http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
     }),
   }),
+  // eslint-disable-next-line comma-dangle
   createUser
 );
 
@@ -54,9 +58,10 @@ app.use(auth);
 
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
+
 const { PORT = 3000 } = process.env;
-app.all('*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый путь не найден' });
+app.all('*', (req, res, next) => {
+  next(res.status(404).send({ message: 'Запрашиваемый путь не найден' }));
 });
 
 app.use(errorLogger);
@@ -68,6 +73,7 @@ app.use((err, req, res, next) => {
   next(
     res.status(statusCode).send({
       message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+      // eslint-disable-next-line comma-dangle
     })
   );
 });
