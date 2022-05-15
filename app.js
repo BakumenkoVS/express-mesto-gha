@@ -7,6 +7,7 @@ const app = express();
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
+const NotFoundError = require('./errors/notFoundError');
 require('dotenv').config();
 
 app.use(bodyParser.json());
@@ -57,8 +58,9 @@ app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
 
 const { PORT = 3000 } = process.env;
-app.all('*', (req, res, next) => {
-  next(res.status(404).send({ message: 'Запрашиваемый путь не найден' }));
+
+app.use((req, res, next) => {
+  next(new NotFoundError('Маршрут не найден'));
 });
 
 app.use(errorLogger);
