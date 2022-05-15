@@ -1,10 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
+const bodyParser = require('body-parser');
 
 const app = express();
-const { bodyParser } = require('body-parser');
-
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
@@ -35,8 +34,7 @@ app.post(
       password: Joi.string().required(),
     }),
   }),
-  // eslint-disable-next-line comma-dangle
-  login
+  login,
 );
 
 app.post(
@@ -50,8 +48,7 @@ app.post(
       avatar: Joi.string().pattern(/^((http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
     }),
   }),
-  // eslint-disable-next-line comma-dangle
-  createUser
+  createUser,
 );
 
 app.use(auth);
@@ -73,8 +70,7 @@ app.use((err, req, res, next) => {
   next(
     res.status(statusCode).send({
       message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-      // eslint-disable-next-line comma-dangle
-    })
+    }),
   );
 });
 

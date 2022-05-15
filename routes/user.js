@@ -1,7 +1,13 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const { getUsers, getUser, updateProfile, updateAvatar, getMe } = require('../controllers/user');
+const {
+  getUsers,
+  getUser,
+  updateProfile,
+  updateAvatar,
+  getMe,
+} = require('../controllers/user');
 
 router.get('/', getUsers);
 router.get('/me', getMe);
@@ -12,7 +18,7 @@ router.get(
       userId: Joi.string().length(24).hex().required(),
     }),
   }),
-  getUser
+  getUser,
 );
 
 router.patch(
@@ -23,7 +29,7 @@ router.patch(
       about: Joi.string().min(2).max(30),
     }),
   }),
-  updateProfile
+  updateProfile,
 );
 
 router.patch(
@@ -35,7 +41,7 @@ router.patch(
         .required(),
     }),
   }),
-  updateAvatar
+  updateAvatar,
 );
 
 module.exports = router;
