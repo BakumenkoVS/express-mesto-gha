@@ -19,13 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(requestLogger);
 
-const allowedCors = [
-  'https://praktikum.tk',
-  'http://praktikum.tk',
-  'localhost:3000',
-  'https://mesto.students.nomoredomains.xyz/',
-  'http://mesto.students.nomoredomains.xyz/',
-];
+const allowedCors = ['https://praktikum.tk', 'http://praktikum.tk', 'localhost:3000', 'https://mesto.bakumenko.nomoredomains.xyz/', 'http://mesto.bakumenko.nomoredomains.xyz/'];
 
 app.use((req, res, next) => {
   const { origin } = req.headers;
@@ -52,7 +46,7 @@ app.post(
       password: Joi.string().required(),
     }),
   }),
-  login,
+  login
 );
 
 app.post(
@@ -66,7 +60,7 @@ app.post(
       avatar: Joi.string().pattern(/^((http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
     }),
   }),
-  createUser,
+  createUser
 );
 
 app.use(auth);
@@ -89,7 +83,7 @@ app.use((err, req, res, next) => {
   next(
     res.status(statusCode).send({
       message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-    }),
+    })
   );
 });
 
