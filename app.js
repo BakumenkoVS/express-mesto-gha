@@ -19,7 +19,15 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(requestLogger);
 
-const allowedCors = ['https://praktikum.tk', 'http://praktikum.tk', 'localhost:3000', 'https://mesto.bakumenko.nomoredomains.xyz/', 'http://mesto.bakumenko.nomoredomains.xyz/'];
+const allowedCors = [
+  'https://praktikum.tk',
+  'http://praktikum.tk',
+  'localhost:3000',
+  'https://mesto.bakumenko.nomoredomains.xyz/',
+  'http://mesto.bakumenko.nomoredomains.xyz/',
+  'https://api.mesto.bakumenko.nomoredomains.xyz/',
+  'http://api.mesto.bakumenko.nomoredomains.xyz/',
+];
 
 app.use((req, res, next) => {
   const { origin } = req.headers;
